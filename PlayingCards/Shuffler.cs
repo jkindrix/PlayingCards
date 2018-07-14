@@ -23,21 +23,21 @@ namespace PlayingCards
             int splitIndex = (numOfCards / 2);
 
             // The size of the first stack is half of the cards rounded down.
-            Card[] cardstack1 = new Card[splitIndex];
+            Card[] cardStack1 = new Card[splitIndex];
 
             // The size of the second stack is everything left over.
-            Card[] cardstack2 = new Card[(numOfCards - cardstack1.Length)];
+            Card[] cardStack2 = new Card[(numOfCards - cardStack1.Length)];
 
             // Move the first half of the given cards into the first stack.
             for (int i = 0; i < splitIndex; i++)
-                cardstack1[i] = cards[i];
+                cardStack1[i] = cards[i];
 
             // Move the remaining cards into a second stack.
             for (int i = splitIndex; i < cards.Length; i++)
-                cardstack2[(i - splitIndex)] = cards[i];
+                cardStack2[(i - splitIndex)] = cards[i];
 
             // Return both stacks of cards to the method caller.
-            return new Card[][] { cardstack1, cardstack2 };
+            return new Card[][] { cardStack1, cardStack2 };
         }
 
         // The Cut() method splits a set of cards in half, and places the second stack on top of the first.
@@ -47,16 +47,16 @@ namespace PlayingCards
             Card[][] cardsAfterCutting = Split(cards);
 
             // If the number of cards is uneven, the second stack will be larger.
-            Card[] cardstack1 = cardsAfterCutting[0];
-            Card[] cardstack2 = cardsAfterCutting[1]; 
+            Card[] cardStack1 = cardsAfterCutting[0];
+            Card[] cardStack2 = cardsAfterCutting[1]; 
 
             // Place the top stack where the bottom stack used to be
-            for (int i = 0; i < cardstack2.Length; i++)
-                cards[i] = cardstack2[i];
+            for (int i = 0; i < cardStack2.Length; i++)
+                cards[i] = cardStack2[i];
 
             // Place the bottom stack where the top stack used to be
-            for (int i = 0, j = cardstack1.Length; i < cardstack1.Length; i++, j++)
-                cards[j] = cardstack1[i];
+            for (int i = 0, j = cardStack1.Length; i < cardStack1.Length; i++, j++)
+                cards[j] = cardStack1[i];
         }
 
         // The RiffleShuffle() method attempts to simulate a riffle shuffle
@@ -69,8 +69,8 @@ namespace PlayingCards
                 Card[][] cardsAfterCutting = Split(cards);
 
                 // If the number of cards is uneven, the second stack will be larger.
-                Card[] cardstack1 = cardsAfterCutting[0];
-                Card[] cardstack2 = cardsAfterCutting[1];
+                Card[] cardStack1 = cardsAfterCutting[0];
+                Card[] cardStack2 = cardsAfterCutting[1];
 
                 // Create a counter used later for looping through the indexes of the two stacks.
                 int indexA = 0;
@@ -82,10 +82,10 @@ namespace PlayingCards
                 int indexC = 1;
 
                 // Shuffle the two stacks of cards back together into a single stack.
-                while (indexA < cardstack1.Length)
+                while (indexA < cardStack1.Length)
                 {
-                    cards[indexB] = cardstack1[indexA];
-                    cards[indexC] = cardstack2[indexA];
+                    cards[indexB] = cardStack1[indexA];
+                    cards[indexC] = cardStack2[indexA];
 
                     indexA++;
                     indexB += 2;
@@ -96,9 +96,9 @@ namespace PlayingCards
                 // Place the extra card on top of the final stack.
                 // // This means 2 cards that were touching in the original stack will still be touching in the final stack,
                 // // but a second riffle shuffle would take care of this.
-                if (cardstack2.Length > cardstack1.Length)
+                if (cardStack2.Length > cardStack1.Length)
                 {
-                    cards[indexB] = cardstack2[indexA];
+                    cards[indexB] = cardStack2[indexA];
                 }
             }
         }
@@ -113,34 +113,42 @@ namespace PlayingCards
                 Card[][] cardsAfterCutting = Split(cards);
 
                 // If the number of cards is uneven, the second stack will be larger.
-                Card[] cardstack1 = cardsAfterCutting[0];
-                Card[] cardstack2 = cardsAfterCutting[1];
+                Card[] cardStack1 = cardsAfterCutting[0];
+                Card[] cardStack2 = cardsAfterCutting[1];
 
                 // Simulate an overhand shuffle
                 //
                 // First, use the Split() method on the second stack of cards to break it down further
+                Card[][] cardsAfterCutting2 = Split(cardStack2);
+
                 // Of the two new stacks, one will be moved to the front of the deck, one to the back
-                Card[][] cardsAfterCutting2 = Split(cardstack2);
-                Card[] cardstack3 = cardsAfterCutting2[0];
-                Card[] cardstack4 = cardsAfterCutting2[1]; // Second stack of cards (will have 1 more than cardstack3 if 'cardstack4.Length' was odd)
+                // The stack cardStack4 will have one more card than cardStack3 if cardStack4.Length2 was odd.
+                Card[] cardStack3 = cardsAfterCutting2[0];
+                Card[] cardStack4 = cardsAfterCutting2[1];
 
-                // Add all the cards in stack 3 to the beginning of the array, then stack 1, then stack 4
+                // There are now three stacks
 
+                // Create a counter for adding cards into the final array
                 int indexA = 0;
 
-                for (int i = 0; i < cardstack3.Length; i++)
+                // The first to be added into the final array is cardStack3 
+                for (int i = 0; i < cardStack3.Length; i++)
                 {
-                    cards[indexA] = cardstack3[i];
+                    cards[indexA] = cardStack3[i];
                     indexA++;
                 }
-                for (int i = 0; i < cardstack1.Length; i++)
+
+                // Next, move the cards in cardStack1 on top of cardStackS3
+                for (int i = 0; i < cardStack1.Length; i++)
                 {
-                    cards[indexA] = cardstack1[i];
+                    cards[indexA] = cardStack1[i];
                     indexA++;
                 }
-                for (int i = 0; i < cardstack4.Length; i++)
+
+                // Last, move the cards in cardStack4 on top of cardStack1
+                for (int i = 0; i < cardStack4.Length; i++)
                 {
-                    cards[indexA] = cardstack4[i];
+                    cards[indexA] = cardStack4[i];
                     indexA++;
                 }
             }
@@ -150,17 +158,21 @@ namespace PlayingCards
         {
             for (int shuffleNumber = 0; shuffleNumber < shuffleAmount; shuffleNumber++)
             {
-                // Crate a copy of the 'cards' array
+                // This shuffle requires some cards in the left hand and right hand,
+                // so 2 arrays are required to represent the state of each hand
+
+                // Crate a copy of the 'cards' array (This will represent the cards in the left hand)
                 Card[] tempCardArray = new Card[cards.Length];
 
                 // Copy all values over from 'cards' to 'tempCardArray'
+                // (Move all cards from the right hand to the left hand)
                 for (int i = 0; i < cards.Length; i++)
                 {
                     tempCardArray[i] = cards[i];
                 }
 
                 Random rand = new Random();
-                int randNum = rand.Next(3, 8); // Get the next random number of cards to take
+                int randNum = rand.Next(3, 8); 
 
                 int indexA = 0; // Keep track of the index of tempCardArray which is in the left hand
 

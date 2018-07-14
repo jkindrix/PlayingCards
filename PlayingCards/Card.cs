@@ -17,8 +17,6 @@ namespace PlayingCards
         public CardRank Rank { get; }
         public string Name { get; }
         public int Value { get; }
-        //public bool InDrawPile { get; set; }
-        //public bool InDiscardPile { get; set; }
 
         public Card(CardColor color, CardSuit suit, CardRank rank, string name, int value = 0)
         {

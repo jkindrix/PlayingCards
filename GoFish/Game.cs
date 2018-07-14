@@ -7,14 +7,18 @@ using PlayingCards;
 
 namespace GoFish
 {
-    class NewGame
+    class Game
     {
-        public static void Setup()
+        // Boolean property defining if the game is over
+        public bool IsOver { get; set; }
+
+        public Game()
         {
             Deck deck = new Deck();
             deck.Print();
+            DrawPile drawPile = new DrawPile(deck);
+            drawPile.Draw(5);
 
-            DrawPile draw = new DrawPile();
             DiscardPile discard = new DiscardPile();
             Dealer dealer = new Dealer();
         }
