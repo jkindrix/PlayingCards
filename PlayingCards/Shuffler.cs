@@ -6,99 +6,141 @@ using System.Threading.Tasks;
 
 namespace PlayingCards
 {
+    // The Shuffler class has methods which accept an array of cards and re-organize them or split them into groups
+    // TODO: Potentially modify or refactor the Shuffler Split() and different xShuffle() methods to better mix the cards
     public class Shuffler
     {
-        // Splits an array of cards into 2 arrays and returns a jagged array
-        public Card[][] Split(Card[] cards) 
+        // The Split() method splits a set of cards in half and returns the 2 stacks as a jagged array.
+        // I was going to make this method split at a random location somewhere in the middle of the deck instead of the halfway point,
+        // but I decided not to since it would actually make RiffleShuffle() less effective.
+        
+        private Card[][] Split(Card[] cards)
         {
-            Card[] cardPile1 = new Card[cards.Length / 2];
-            Card[] cardPile2 = new Card[cards.Length - cardPile1.Length];
+            // Count the number of cards in the set.
+            int numOfCards = cards.Length;
 
-            for (int i = 0; i < (cards.Length / 2); i++)
-                cardPile1[i] = cards[i];
+            // Find the index at half of the cards.
+            int splitIndex = (numOfCards / 2);
 
-            for (int i = (cards.Length / 2); i < cards.Length; i++)
-                cardPile2[i - (cards.Length / 2)] = cards[i];
+            // The size of the first stack is half of the cards rounded down.
+            Card[] cardstack1 = new Card[splitIndex];
 
-            return new Card[][] { cardPile1, cardPile2 };
+            // The size of the second stack is everything left over.
+            Card[] cardstack2 = new Card[(numOfCards - cardstack1.Length)];
+
+            // Move the first half of the given cards into the first stack.
+            for (int i = 0; i < splitIndex; i++)
+                cardstack1[i] = cards[i];
+
+            // Move the remaining cards into a second stack.
+            for (int i = splitIndex; i < cards.Length; i++)
+                cardstack2[(i - splitIndex)] = cards[i];
+
+            // Return both stacks of cards to the method caller.
+            return new Card[][] { cardstack1, cardstack2 };
         }
 
+        // The Cut() method splits a set of cards in half, and places the second stack on top of the first.
         public void Cut(Card[] cards)
         {
+            // Use the Split() method to get 2 stacks of cards.
             Card[][] cardsAfterCutting = Split(cards);
-            Card[] cardPile1 = cardsAfterCutting[0]; // First pile of cards
-            Card[] cardPile2 = cardsAfterCutting[1]; // Second pile of cards (will have 1 more than cardPile1 if 'cards.Length' was odd)
 
-            for (int i = 0; i < cardPile2.Length; i++)
-                cards[i] = cardPile2[i];
+            // If the number of cards is uneven, the second stack will be larger.
+            Card[] cardstack1 = cardsAfterCutting[0];
+            Card[] cardstack2 = cardsAfterCutting[1]; 
 
-            for (int i = 0, j = cardPile1.Length; i < cardPile1.Length; i++, j++)
-                cards[j] = cardPile1[i];
+            // Place the top stack where the bottom stack used to be
+            for (int i = 0; i < cardstack2.Length; i++)
+                cards[i] = cardstack2[i];
+
+            // Place the bottom stack where the top stack used to be
+            for (int i = 0, j = cardstack1.Length; i < cardstack1.Length; i++, j++)
+                cards[j] = cardstack1[i];
         }
 
+        // The RiffleShuffle() method attempts to simulate a riffle shuffle
         public void RiffleShuffle(Card[] cards, int shuffleAmount = 1)
         {
+            // Repeat the shuffle for the number of times requested
             for (int shuffleNumber = 0; shuffleNumber < shuffleAmount; shuffleNumber++)
             {
-                // The Cut() method cuts the cards into 2 arrays and returns a jagged array of the 2 piles it made
-                Card[][] cardsAfterCutting = Split(cards); // A jagged array stores both piles after the cut
-                Card[] cardPile1 = cardsAfterCutting[0]; // First pile of cards
-                Card[] cardPile2 = cardsAfterCutting[1]; // Second pile of cards (will have 1 more than cardPile1 if 'cards.Length' was odd)
+                // Use the Split() method to get 2 stacks of cards.
+                Card[][] cardsAfterCutting = Split(cards);
 
-                // Simulate a riffle shuffle
-                int indexA = 0; // Counts through the temp card arrays
-                int indexB = 0; // Counts through even numbers
-                int indexC = 1; // Counts through odd numbers
+                // If the number of cards is uneven, the second stack will be larger.
+                Card[] cardstack1 = cardsAfterCutting[0];
+                Card[] cardstack2 = cardsAfterCutting[1];
 
-                while (indexA < cardPile1.Length)
+                // Create a counter used later for looping through the indexes of the two stacks.
+                int indexA = 0;
+
+                // Create a counter used later for looping through the indexes of the final card stack (counts even numbers by 2s).
+                int indexB = 0;
+
+                // Create a counter used later for looping through the indexes of the final card stack (counts odd numbers by 2s).
+                int indexC = 1;
+
+                // Shuffle the two stacks of cards back together into a single stack.
+                while (indexA < cardstack1.Length)
                 {
-                    cards[indexB] = cardPile1[indexA];
-                    cards[indexC] = cardPile2[indexA]; // This pile will have 1 extra card if the number of cards given were odd
+                    cards[indexB] = cardstack1[indexA];
+                    cards[indexC] = cardstack2[indexA];
 
                     indexA++;
                     indexB += 2;
                     indexC += 2;
                 }
 
-                if (cardPile2.Length > cardPile1.Length) // If the 2nd pile is larger than the first pile, there should be one extra card
+                // If the 2nd stack is larger than the first stack, there will be an extra card leftover.
+                // Place the extra card on top of the final stack.
+                // // This means 2 cards that were touching in the original stack will still be touching in the final stack,
+                // // but a second riffle shuffle would take care of this.
+                if (cardstack2.Length > cardstack1.Length)
                 {
-                    cards[indexB] = cardPile2[indexA]; // Place the extra card in the next slot of the array
+                    cards[indexB] = cardstack2[indexA];
                 }
             }
         }
 
+        // The OverhandShuffle() method attempts to simulate an overhand shuffle
         public void OverhandShuffle(Card[] cards, int shuffleAmount = 1)
         {
+            // Repeat the shuffle for the number of times requested
             for (int shuffleNumber = 0; shuffleNumber < shuffleAmount; shuffleNumber++)
             {
-                // The Cut() method cuts the cards into 2 arrays and returns a jagged array of the 2 piles it made
-                Card[][] cardsAfterCutting = Split(cards); // A jagged array stores both piles after the cut
-                Card[] cardPile1 = cardsAfterCutting[0]; // First pile of cards
-                Card[] cardPile2 = cardsAfterCutting[1]; // Second pile of cards (will have 1 more than cardPile1 if 'cards.Length' was odd)
+                // Use the Split() method to get 2 stacks of cards.
+                Card[][] cardsAfterCutting = Split(cards);
+
+                // If the number of cards is uneven, the second stack will be larger.
+                Card[] cardstack1 = cardsAfterCutting[0];
+                Card[] cardstack2 = cardsAfterCutting[1];
 
                 // Simulate an overhand shuffle
-                // First, cut the second pile of cards into two more piles (One goes to the front of the deck, one to the back)
-                Card[][] cardsAfterCutting2 = Split(cardPile2);
-                Card[] cardPile3 = cardsAfterCutting2[0];
-                Card[] cardPile4 = cardsAfterCutting2[1];// Second pile of cards (will have 1 more than cardPile3 if 'cardPile4.Length' was odd)
+                //
+                // First, use the Split() method on the second stack of cards to break it down further
+                // Of the two new stacks, one will be moved to the front of the deck, one to the back
+                Card[][] cardsAfterCutting2 = Split(cardstack2);
+                Card[] cardstack3 = cardsAfterCutting2[0];
+                Card[] cardstack4 = cardsAfterCutting2[1]; // Second stack of cards (will have 1 more than cardstack3 if 'cardstack4.Length' was odd)
 
-                // Add all the cards in pile 3 to the beginning of the array, then pile 1, then pile 4
+                // Add all the cards in stack 3 to the beginning of the array, then stack 1, then stack 4
 
                 int indexA = 0;
 
-                for (int i = 0; i < cardPile3.Length; i++)
+                for (int i = 0; i < cardstack3.Length; i++)
                 {
-                    cards[indexA] = cardPile3[i];
+                    cards[indexA] = cardstack3[i];
                     indexA++;
                 }
-                for (int i = 0; i < cardPile1.Length; i++)
+                for (int i = 0; i < cardstack1.Length; i++)
                 {
-                    cards[indexA] = cardPile1[i];
+                    cards[indexA] = cardstack1[i];
                     indexA++;
                 }
-                for (int i = 0; i < cardPile4.Length; i++)
+                for (int i = 0; i < cardstack4.Length; i++)
                 {
-                    cards[indexA] = cardPile4[i];
+                    cards[indexA] = cardstack4[i];
                     indexA++;
                 }
             }

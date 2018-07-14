@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace PlayingCards
 {
+    // A Deck is a container for an array of cards
+    // Each card is instantiated and added to an array named 'cards'
     public class Deck
     {
-        // A Deck is a container for an array of cards
-        // Each card is instantiated and added to an array named 'cards'
-
         private bool IncludeJokers { get; }
         private int NumberOfCards { get; }
 
