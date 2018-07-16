@@ -13,12 +13,6 @@ namespace GoFish
         {
             // Create a new Game
             Game game = new Game();
-
-            // If the win condition is not met, start or continue the game
-            while (game.IsOver == false)
-            {
-
-            }
         }
     }
 }

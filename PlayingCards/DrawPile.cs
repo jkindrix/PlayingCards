@@ -16,7 +16,7 @@ namespace PlayingCards
             Cards = deck.Cards;
         }
 
-        // TODO: Implement a DrawPile constuctor to accept a Deck[] array and make a large draw pile 
+        // TODO: Implement a DrawPile constuctor to accept a Deck[] array and make a larger combined draw pile 
 
         // The Draw() method removes a number of cards from the top of the draw pile and returns them to the method caller
         public Card[] Draw(int numberOfCards)
@@ -61,5 +61,7 @@ namespace PlayingCards
             for (int i = 0; i < Cards.Length; i++)
                 Cards[i] = copyCards[i];
         }
+
+        // TODO: May need to implement a GrowDrawPile() method which accepts a Card[] arrayS
     }
 }

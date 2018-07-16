@@ -9,9 +9,18 @@ namespace PlayingCards
     public class Player
     {
         public int Score { get; set; }
+        public Hand Hand { get; set; }
+        public bool IsTurn { get; set; }
 
-        public Player()
+        public Player(int handSize)
         {
+            Hand hand = new Hand(handSize);
         }
+
+        public void TakeTurn()
+        {
+
+        }
+
     }
 }
